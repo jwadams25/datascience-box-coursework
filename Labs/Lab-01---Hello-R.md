@@ -159,3 +159,38 @@ circle_data %>%
 ### Exercise 5
 
 Add code and narrative as needed.
+
+``` r
+datasaurus_dozen %>%
+ggplot(aes(x = x, y = y, color = dataset)) +
+  geom_point() +
+  facet_wrap(~dataset, ncol = 3) +
+  theme(legend.position = "none")
+```
+
+![](Lab-01---Hello-R_files/figure-gfm/all-data-viz-1.png)<!-- -->
+
+``` r
+datasaurus_dozen %>%
+  group_by(dataset) %>%
+  summarize(r = cor(x, y))
+```
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## # A tibble: 13 x 2
+    ##    dataset          r
+    ##    <chr>        <dbl>
+    ##  1 away       -0.0641
+    ##  2 bullseye   -0.0686
+    ##  3 circle     -0.0683
+    ##  4 dino       -0.0645
+    ##  5 dots       -0.0603
+    ##  6 h_lines    -0.0617
+    ##  7 high_lines -0.0685
+    ##  8 slant_down -0.0690
+    ##  9 slant_up   -0.0686
+    ## 10 star       -0.0630
+    ## 11 v_lines    -0.0694
+    ## 12 wide_lines -0.0666
+    ## 13 x_shape    -0.0656

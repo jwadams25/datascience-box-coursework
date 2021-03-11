@@ -28,8 +28,7 @@ datasaurus_dozen %>%
 
 ### Exercise 2
 
-The answers for this Exercise are given for you below.
-But you should clean up some of the narrative so that it only includes what you want to turn in.
+The answers for this Exercise are given for you below. But you should clean up some of the narrative so that it only includes what you want to turn in.
 
 First let's plot the data in the dino dataset:
 
@@ -49,13 +48,11 @@ dino_data %>%
 
 ### Exercise 3
 
-Add code and narrative as needed.
-Note that the R chunks are labelled with `plot-star` and `cor-star` to provide spaces to place the code for plotting and calculating the correlation coefficient.
-To finish, clean up the narrative by removing these instructions.
+Add code and narrative as needed. Note that the R chunks are labelled with `plot-star` and `cor-star` to provide spaces to place the code for plotting and calculating the correlation coefficient. To finish, clean up the narrative by removing these instructions.
 
 Blah blah blah...
 
-```{r plot-star}
+```{r plot-star, fig.height=3, fig.width=6}
 
 star_data <- datasaurus_dozen %>%
   filter(dataset == "star")
@@ -80,11 +77,9 @@ star_data %>%
 
 ### Exercise 4
 
-Add code and narrative as needed.
-Note that two R chunks are given but they are not labeled.
-Use the convention from above to name them appropriately.
+Add code and narrative as needed. Note that two R chunks are given but they are not labeled. Use the convention from above to name them appropriately.
 
-```{r circle-data}
+```{r circle-data, fig.height=3, fig.width=6}
 circle_data <- datasaurus_dozen %>%
   filter(dataset == "circle")
   
@@ -106,3 +101,19 @@ circle_data %>%
 ### Exercise 5
 
 Add code and narrative as needed.
+
+```{r all-data-viz, fig.height= 6, fig.width=6 }
+datasaurus_dozen %>%
+ggplot(aes(x = x, y = y, color = dataset)) +
+  geom_point() +
+  facet_wrap(~dataset, ncol = 3) +
+  theme(legend.position = "none")
+
+```
+
+```{r all-data-cor}
+
+datasaurus_dozen %>%
+  group_by(dataset) %>%
+  summarize(r = cor(x, y))
+```
