@@ -16,7 +16,16 @@ library(datasauRus)
 
 ### Exercise 1
 
-Remove this text, and add your answer for Exercise 1 here.
+```{r view-data}
+glimpse(datasaurus_dozen)
+?datasauRus
+```
+
+```{r freq-table}
+datasaurus_dozen %>%
+  count(dataset)
+
+```
 
 ### Exercise 2
 
