@@ -96,7 +96,24 @@ star_data_viz <- datasaurus_dozen %>%
   filter(dataset == "star") %>%
 ggplot(aes(x = x, y = y)) +
   geom_point()
+
+star_data
 ```
+
+    ## # A tibble: 142 x 3
+    ##    dataset     x     y
+    ##    <chr>   <dbl> <dbl>
+    ##  1 star     58.2  91.9
+    ##  2 star     58.2  92.2
+    ##  3 star     58.7  90.3
+    ##  4 star     57.3  89.9
+    ##  5 star     58.1  92.0
+    ##  6 star     57.5  88.1
+    ##  7 star     28.1  63.5
+    ##  8 star     28.1  63.6
+    ##  9 star     28.1  63.1
+    ## 10 star     27.6  62.8
+    ## # … with 132 more rows
 
 I’m some text, you should replace me with more meaningful text…
 
@@ -115,6 +132,29 @@ star_data %>%
 Add code and narrative as needed. Note that two R chunks are given but
 they are not labeled. Use the convention from above to name them
 appropriately.
+
+``` r
+circle_data <- datasaurus_dozen %>%
+  filter(dataset == "circle")
+  
+circle_data_viz <- datasaurus_dozen %>%
+  filter(dataset == "circle") %>%
+ggplot(aes(x = x, y = y)) +
+  geom_point()
+circle_data_viz
+```
+
+![](Lab-01---Hello-R_files/figure-gfm/circle-data-1.png)<!-- -->
+
+``` r
+circle_data %>%
+  summarize(r = cor(x, y))
+```
+
+    ## # A tibble: 1 x 1
+    ##         r
+    ##     <dbl>
+    ## 1 -0.0683
 
 ### Exercise 5
 

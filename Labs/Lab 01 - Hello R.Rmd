@@ -65,6 +65,8 @@ star_data_viz <- datasaurus_dozen %>%
 ggplot(aes(x = x, y = y)) +
   geom_point()
 
+star_data
+
 ```
 
 I'm some text, you should replace me with more meaningful text...
@@ -82,10 +84,23 @@ Add code and narrative as needed.
 Note that two R chunks are given but they are not labeled.
 Use the convention from above to name them appropriately.
 
-```{r}
+```{r circle-data}
+circle_data <- datasaurus_dozen %>%
+  filter(dataset == "circle")
+  
+circle_data_viz <- datasaurus_dozen %>%
+  filter(dataset == "circle") %>%
+ggplot(aes(x = x, y = y)) +
+  geom_point()
+circle_data_viz
+
 ```
 
-```{r}
+```{r cor-circle}
+
+circle_data %>%
+  summarize(r = cor(x, y))
+
 ```
 
 ### Exercise 5
