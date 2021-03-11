@@ -88,7 +88,27 @@ up the narrative by removing these instructions.
 
 Blah blah blah…
 
+``` r
+star_data <- datasaurus_dozen %>%
+  filter(dataset == "star")
+  
+star_data_viz <- datasaurus_dozen %>%
+  filter(dataset == "star") %>%
+ggplot(aes(x = x, y = y)) +
+  geom_point()
+```
+
 I’m some text, you should replace me with more meaningful text…
+
+``` r
+star_data %>%
+  summarize(r = cor(x, y))
+```
+
+    ## # A tibble: 1 x 1
+    ##         r
+    ##     <dbl>
+    ## 1 -0.0630
 
 ### Exercise 4
 
