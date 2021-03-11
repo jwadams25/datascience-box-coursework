@@ -1,0 +1,149 @@
+---
+title: "AE 08 - IMDB + Web Scraping"
+author: "John Adams"
+date: "3/11/2021"
+output: html_document
+---
+
+## Scrape the list of top 250 movies from https://www.imdb.com/chart/top
+
+# Load packages ---------------------------------------------------------------
+
+library(tidyverse)
+library(rvest)
+
+# Read html page ---------------------------------------------------------------
+
+page <- read_html("https://www.imdb.com/chart/top")
+page
+
+# Titles -----------------------------------------------------------------------
+
+titles <- page %>%
+  html_nodes(".titleColumn a") %>%
+  html_text()
+
+# Years-------------------------------------------------------------------------
+
+years <- page %>%
+  html_nodes(".secondaryInfo") %>%
+  html_text() %>%
+  str_remove("\\(") %>%
+  str_remove("\\)") %>%
+  as.numeric()
+
+# Scores -----------------------------------------------------------------------
+
+ratings <- page %>%
+  html_nodes("strong") %>%
+  html_text() %>%
+  as.numeric()
+
+# Put it all in a data frame ---------------------------------------------------
+
+imdb_top_250 <- tibble(
+  title = titles,
+  rating = ratings,
+  year = years
+)
+
+# Add rank ---------------------------------------------------------------------
+
+imdb_top_250 <- imdb_top_250 %>%
+  mutate(rank = 1:nrow(imdb_top_250)) %>%
+  relocate(rank)
+
+# Which years have the most movies?
+
+imdb_top_250 %>%
+  count(year, sort = TRUE) %>%
+  ggplot(aes(x = year, y = n)) +
+  geom_line()
+
+# Which 1995 movies made the list
+
+imdb_top_250 %>%
+  filter(year == 1995)
+
+# Visualize the avrage yearly ratings for movies that made it on the top 250 list over time. 
+
+imdb_top_250 %>%
+  group_by(year) %>%
+  summarise(avg_yearly_rating = mean(rating)) %>%
+  ggplot(aes(x = year, y = avg_yearly_rating)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE)
+
+## Scrape the list of most populat TV shows from https://www.imdb.com/chart/tvmeter
+
+# load packages ----------------------------------------------------------------
+
+library(tidyverse)
+library(rvest)
+
+# read in http://www.imdb.com/chart/tvmeter ------------------------------------
+
+page_tv <- read_html("http://www.imdb.com/chart/tvmeter")
+
+# years ------------------------------------------------------------------------
+
+years <- page_tv %>%
+  html_nodes("a+ .secondaryInfo") %>%
+  html_text() %>%
+  str_remove("\\(") %>%
+  str_remove("\\)") %>%
+  as.numeric()
+
+# scores -----------------------------------------------------------------------
+
+scores <- page_tv %>%
+  html_nodes(".imdbRating") %>%
+  html_text() %>%
+  as.numeric()
+
+# names ------------------------------------------------------------------------
+
+names <- page_tv %>%
+  html_nodes(".titleColumn") %>%
+  html_text() %>%
+  str_remove_all("\n") %>%
+  str_squish() 
+
+
+# tvshows dataframe ------------------------------------------------------------
+
+tvshows <- tibble(
+  rank = 1:100,
+  name = names,
+  year = years,
+  score = scores
+)
+
+tvshows <- tvshows %>%
+separate(col = name, into = c("name", "other_info"), sep = " \\(", extra = "merge") %>%
+  select(-other_info)
+
+# add new variables ------------------------------------------------------------
+
+tvshows <- tvshows %>%
+  mutate(
+    genre = NA,
+    runtime = NA,
+    n_episode = NA,
+  )
+
+# add new info for first show --------------------------------------------------
+
+tvshows$genre[1] <- "Action, Comedy, Drama"
+tvshows$n_episode[1] <- 9
+
+# add new info for second show --------------------------------------------------
+
+tvshows$genre[2] <- "Comedy, Drama"
+tvshows$n_episode[2] <- 12
+
+# add new info for third show --------------------------------------------------
+
+tvshows$genre[3] <- "__"
+tvshows$runtime[3] <- ___
+tvshows$n_episode[3] <- ___

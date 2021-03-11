@@ -1,0 +1,96 @@
+---
+title: "Visualizing Starwars characters"
+author: "Mine Çetinkaya-Rundel and edited by John Adams"
+output: github_document
+---
+
+```{r load-packages, include=FALSE}
+library(tidyverse)
+```
+
+### Glimpse at the starwars data frame.
+
+```{r glimpse-starwars}
+glimpse(starwars)
+```
+
+### Modify the following plot to change the color of all points to `"pink"`.
+
+```{r scatterplot}
+ggplot(starwars, 
+       aes(x = height, y = mass, color = gender, size = birth_year)) +
+  geom_point(color = "#30509C")
+```
+
+### Add labels for title, x and y axes, and size of points. Uncomment to see the effect.
+
+```{r scatterplot-labels}
+ggplot(starwars, 
+       aes(x = height, y = mass, color = gender, size = birth_year)) +
+  geom_point(color = "#30509C") +
+  labs(
+    title = "Mass vs Height of Star Wars Characters",
+    x = "Height (cm)", 
+    y = "Weight (kg)",
+    size = "Birth Year"
+    )
+```
+
+### Pick a single categorical variable from the data set and make a bar plot of its distribution.
+
+(A little bit of starter code is provided below, and the code chunk is set to not be evaluated with `eval = FALSE` because the current code in there is not valid code and hence the document wouldn't knit. Once you replace the code with valid code, set the chunk option to `eval = TRUE`, or remove the `eval` option altogether since it's set to `TRUE` by default.)
+
+```{r barplot, eval = FALSE}
+ggplot(starwars, aes(hair_color)) +
+  geom_bar()
+```
+
+### Pick a single numerical variable and make a histogram of it.
+
+(This time no starter code is provided, you're on your own!)
+
+```{r histogram}
+starwars %>%
+  ggplot(aes(x=height)) +
+  geom_histogram(binwidth = 10) +
+  labs(
+    title = "Distribution of Heights of Star Wars Characters",
+    x = "Height (cm)", 
+    y = "Number of Characters"
+    )
+```
+
+### Pick a numerical variable and a categorical variable and make a visualisation (you pick the type!) to visualise the relationship between the two variables. Along with your code and output, provide an interpretation of the visualisation.
+
+```{r num-cat}
+starwars %>%
+  filter(gender != "NA") %>%
+  ggplot(aes(x=height)) +
+  geom_histogram(binwidth = 10) +
+  labs(
+    title = "Distribution of Heights of Star Wars Characters",
+    x = "Height (cm)", 
+    y = "Number of Characters"
+    ) +
+  facet_wrap(~gender, nrow = 2, ncol = 1)
+```
+Masculine characters tend to be taller than femine characters, with most masculine characters ranging from 160 cm to 210 and feminine characters ranging from 150 to 180 cm. Masculine characters heights are skewed to the left, while femine characters heights are symmetrical. Each gender then as a few characters that are much smaller than average and one that is much larger than the average. 
+### Pick two categorical variables and make a visualisation to visualise the relationship between the two variables. Along with your code and output, provide an interpretation of the visualisation.
+
+```{r cat-cat}
+starwars %>%
+  ggplot(aes(y = sex, fill = gender)) +
+  geom_bar(position = "fill") +
+  labs(x = "Proportion",
+       y = "sex",
+       title = "Sex and Gender of Star Wars Characters")
+```
+
+### Pick two numerical variables and two categorical variables and make a visualisation that incorportes all of them and provide an interpretation with your answer.
+
+```{r multi}
+starwars %>%
+  ggplot(aes(x = height, y = mass, color = gender)) +
+  geom_point() +
+  facet_wrap(~ eye_color)
+```
