@@ -24,7 +24,6 @@ glimpse(datasaurus_dozen)
 ```{r freq-table}
 datasaurus_dozen %>%
   count(dataset)
-
 ```
 
 ### Exercise 2
