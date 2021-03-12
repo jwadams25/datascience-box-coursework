@@ -1,0 +1,120 @@
+---
+title: "Lab 03 - Nobel Laureates"
+author: "John Adams"
+date: "3/12/21"
+output: github_document
+---
+
+## Lab directions
+
+https://rstudio-education.github.io/datascience-box/course-materials/lab-instructions/lab-03/lab-03-nobel-laureates.html
+
+### Load packages and data
+
+```{r load-packages, message=FALSE}
+library(tidyverse) 
+```
+
+```{r load-data, message=FALSE}
+nobel <- read_csv(url("https://raw.githubusercontent.com/rstudio-education/datascience-box/master/course-materials/starters/lab/lab-03-nobel-laureates/data/nobel.csv"))
+```
+
+## Exercises
+
+### Exercise 1
+
+```{r get-to-know-data}
+
+glimpse(nobel)
+
+```
+There are 935 nobel laureates and 26 variables. 
+
+### Exercise 2
+
+```{r nobel-living-data}
+nobel_living <- nobel %>%
+                filter(
+                  !is.na(country),
+                  gender != "org",
+                  is.na(died_date)
+                )
+glimpse(nobel_living)
+
+```
+
+
+### Exercise 3
+
+```{r data}
+nobel_living <- nobel_living %>%
+    mutate(
+    country_us = if_else(country == "USA", "USA", "Other")
+  )
+
+nobel_living_science <- nobel_living %>%
+  filter(category %in% c("Physics", "Medicine", "Chemistry", "Economics"))
+        
+```
+
+```{r faceted-bars-category}
+
+nobel_living_science %>%
+  ggplot(aes(x = country_us)) +
+  geom_bar() +
+  coord_flip() +
+  labs(title = "Was the Nobel laurete in the US when he/she won?",
+       subtitle = "For scientific Nobel prizes only",
+       x = "",
+       y = "") +
+  facet_wrap(~category, nrow = 2)
+
+```
+
+### Exercise 4
+
+```{r born-usa-data}
+
+nobel_living_science <- nobel_living_science %>%
+  mutate(
+    born_country_us = if_else(born_country == "USA", "USA", "Other")
+  )
+
+```
+
+
+### Exercise 5
+
+```{r segmented-bars-in-us-born-us}
+nobel_living_science %>%
+  ggplot(aes(x = country_us, fill = born_country_us)) +
+  geom_bar(position = "fill") +
+  coord_flip() +
+  labs(title = "Was the Nobel laurete in the US when he/she won?",
+       subtitle = "For scientific Nobel prizes only",
+       x = "",
+       y = "",
+       fill = "Where was the laurete born?") +
+  theme_minimal() +
+ scale_fill_manual(values = c(
+    "Other" = "#756bb1",
+    "USA" = "gray"
+  ))  +
+  facet_wrap(~category, nrow = 2)
+```
+
+```{r tables}
+
+nobel_living_science %>%
+  group_by(category, country_us) %>%
+  count(born_country_us) %>% 
+  mutate(proportion = n / sum(n)) %>% 
+  select(-n) %>%
+  pivot_wider(names_from = born_country_us, values_from = proportion) 
+
+```
+
+### Exercise 6
+
+The visualization above supports the Buzzfeed claim. Between 20 and 37.5 percent of nobel winners located in the US when they won were born in another country.  
+What also becomes clear through this visualizations is that US born winners are not winning while in another country. 
