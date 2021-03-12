@@ -1,7 +1,7 @@
 Lab 02 - Plastic waste
 ================
 John Adams
-r Sys.Date()
+3/12/21
 
 ## Lab Details
 
