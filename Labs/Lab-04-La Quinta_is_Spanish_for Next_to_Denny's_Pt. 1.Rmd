@@ -1,0 +1,289 @@
+---
+title: "Lab 04 - La Quinta is Spanish for next to Denny's, Pt. 1"
+author: "John Adams"
+date: "3/12/21"
+output: github_document
+---
+
+## Lab 4 Directions
+https://rstudio-education.github.io/datascience-box/course-materials/lab-instructions/lab-04/lab-04-viz-sp-data.html
+
+### Load packages and data
+
+```{r load-packages, message = FALSE}
+library(tidyverse) 
+library(dsbox) 
+library(maps)
+```
+
+```{r load-data, message = FALSE}
+states <- read_csv(url("https://raw.githubusercontent.com/rstudio-education/datascience-box/master/course-materials/starters/lab/lab-04-viz-sp-data/data/states.csv"))
+```
+
+### Exercise 1
+
+```{r dennys-data-dimensions}
+glimpse(dennys)
+```
+
+There are 1643 Denny's restaurants and 6 variables. 
+
+### Exercise 2
+
+```{r laquinta-data-dimensions}
+glimpse(laquinta)
+```
+
+There are 909 La Quinta hotels and 6 variables. 
+
+### Exercise 3
+
+There aren't any Denny's outside of the US, but La Quinta does have hotels outside of the US. 
+
+### Exercise 4
+
+Using the data you could:
+- visualize the location using long and lat 
+- count the state variable
+
+### Exercise 5
+
+```{r denny-outside-us}
+
+dennys %>%
+  filter(!(state %in% states$abbreviation))
+
+```
+
+### Exercise 6
+
+```{r dennys-with-country}
+dn <- dennys %>%
+        mutate(country = "United States")
+```
+
+### Exercise 8
+
+```{r laquinta-with-country}
+
+laquinta %>%
+  filter(!(state %in% states$abbreviation))
+
+lq <- laquinta %>%
+  mutate(country = case_when(
+    state %in% state.abb     ~ "United States",
+    state %in% c("ON", "BC") ~ "Canada",
+    state == "ANT"           ~ "Colombia",
+    state %in% c("AG", "QR", "CH", "NL", "VE", "PU", "SL" )  ~ "Mexico",
+    state == "FM" ~ "Honduras"
+  )) %>%
+  filter(country == "United States")
+  
+```
+
+```{r n-locations_state}
+
+dn %>%
+  group_by(state) %>%
+  count() %>%
+  arrange(desc(n))
+
+lq %>%
+  group_by(state) %>%
+  count() %>%
+  arrange(desc(n))
+```
+
+These numbers aren't that surprising as California, Texas, and Florida are all big states that attract a lot of tourists. 
+
+### Exercise 9 
+
+```{r joining-dn-state-data}
+dn %>%
+  count(state) %>%
+  inner_join(states, by = c("state" = "abbreviation"))
+
+```
+### Exercise 10
+
+```{r dn-locations-sq-mile}
+dn %>%
+  count(state) %>%
+  inner_join(states, by = c("state" = "abbreviation")) %>%
+  mutate(
+    area_thousands = area/1000,
+    locations_per_area_thousands = n/(area/1000)) %>%
+  arrange(desc(locations_per_area_thousands))
+
+lq %>%
+  count(state) %>%
+  inner_join(states, by = c("state" = "abbreviation")) %>%
+  mutate(
+    area_thousands = area/1000,
+    locations_per_area_thousands = n/(area/1000)) %>%
+  arrange(desc(locations_per_area_thousands))
+
+```
+
+```{r merge-data}
+
+dn <- dn %>%
+  mutate(establishment = "Denny's")
+lq <- lq %>%
+  mutate(establishment = "La Quinta")
+
+dn_lq <- bind_rows(dn, lq)
+
+```
+
+```{r plot-locations}
+
+dn_lq %>%
+  ggplot(aes(x = longitude, y = latitude, color = establishment)) +
+  borders("state") +
+  geom_point(alpha = 0.25, size = 0.5) +
+  coord_quickmap() +
+  labs(
+    title = "Are Denny's Located Near La Quinta Hotels in the United States?",
+    caption = "Source: bit.ly/3bFr9o0 & bit.ly/2Oi5OIB",
+    x = NULL, 
+    y = NULL,
+    color = ""
+  ) +
+  scale_color_manual(values = c(
+    "Denny's" = "#ffde24",
+    "La Quinta" = "#005033"
+  )) +
+  theme(
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = NA),
+    axis.text = element_blank(),
+    legend.position = "right", 
+    axis.ticks = element_blank()
+  ) 
+```
+
+### Trying to figure out how to map just one state
+
+```{r nc-location-comp}
+nc <- map_data('state', "north carolina")
+
+mid_range <- function(x) mean(range(x))
+
+seats <- do.call(rbind, lapply(split(nc, nc$subregion), function(d) {
+  data.frame(lat = mid_range(d$lat), long = mid_range(d$long), subregion = unique(d$subregion))
+}))
+
+
+nc_dn_lq <- dn_lq  %>%
+  filter(state == "NC")
+
+nc <- nc %>%
+  rename(longitude = long,
+         latitude = lat
+  )
+
+nc_dn_lq_map <- full_join(nc_dn_lq, nc)
+
+nc_dn_lq_map_poly <- full_join(nc_dn_lq, nc) %>%
+filter(!is.na(group))
+  
+nc_dn_lq_map %>%  
+  filter(is.na(group)) %>%
+  ggplot(aes(x = longitude, y = latitude)) +
+  geom_polygon(aes(group = group), data = nc_dn_lq_map_poly, fill = NA, colour = "grey60") +
+  coord_quickmap() +
+  geom_point(alpha = 1, size = 1, aes(color = establishment)) +
+  labs(
+    title = "Are Denny's Located Near La Quinta Hotels in the United States?",
+    caption = "Source: bit.ly/3bFr9o0 & bit.ly/2Oi5OIB",
+    x = NULL, 
+    y = NULL,
+    color = ""
+  ) +
+  scale_color_manual(values = c(
+    "Denny's" = "#ffde24",
+    "La Quinta" = "#005033"
+  )) +
+  theme(
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = NA),
+    axis.text = element_blank(),
+    legend.position = "right", 
+    axis.ticks = element_blank()
+  ) 
+
+
+```
+
+### After figuring out how to map one state
+
+North Carolina 
+
+```{r final-nc-state}
+  dn_lq %>%
+    filter(state == "NC") %>%
+  ggplot(aes(x = longitude, y = latitude)) +
+  geom_polygon(aes(group = group), data = nc, fill = NA, colour = "grey60") +
+  coord_quickmap() +
+  geom_point(alpha = 1, size = 1, aes(color = establishment)) +
+  labs(
+    title = "Are Denny's Located Near La Quinta Hotels in North Carolina?",
+    caption = "Source: bit.ly/3bFr9o0 & bit.ly/2Oi5OIB",
+    x = NULL, 
+    y = NULL,
+    color = ""
+  ) +
+  scale_color_manual(values = c(
+    "Denny's" = "#ffde24",
+    "La Quinta" = "#005033"
+  )) +
+  theme(
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = NA),
+    axis.text = element_blank(),
+    legend.position = "right", 
+    axis.ticks = element_blank()
+  ) 
+```
+
+```{r final-tx-state}
+tx <- map_data('state', "texas")
+mid_range <- function(x) mean(range(x))
+seats_tx <- do.call(rbind, lapply(split(tx, tx$subregion), function(d) {
+  data.frame(lat = mid_range(d$lat), long = mid_range(d$long), subregion = unique(d$subregion))
+})) 
+
+tx <- tx %>%
+    rename(longitude = long,
+         latitude = lat
+  )
+
+dn_lq %>%
+    filter(state == "TX") %>%
+  ggplot(aes(x = longitude, y = latitude)) +
+  geom_polygon(aes(group = group), data = tx, fill = NA, colour = "grey60") +
+  coord_quickmap() +
+  geom_point(alpha = 0.5, size = 1, aes(color = establishment)) +
+  labs(
+    title = "Are Denny's Located Near La Quinta Hotels in Texas?",
+    caption = "Source: bit.ly/3bFr9o0 & bit.ly/2Oi5OIB",
+    x = NULL, 
+    y = NULL,
+    color = ""
+  ) +
+  scale_color_manual(values = c(
+    "Denny's" = "#ffde24",
+    "La Quinta" = "#005033"
+  )) +
+  theme(
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = NA),
+    axis.text = element_blank(),
+    legend.position = "right", 
+    axis.ticks = element_blank()
+  ) 
+```
+
+
+
