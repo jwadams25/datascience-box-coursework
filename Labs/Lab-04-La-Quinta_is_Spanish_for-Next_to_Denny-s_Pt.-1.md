@@ -412,3 +412,48 @@ dn_lq %>%
 ```
 
 ![](Lab-04-La-Quinta_is_Spanish_for-Next_to_Denny-s_Pt.-1_files/figure-gfm/final-tx-state-1.png)<!-- -->
+
+``` r
+ma <- map_data('state', "massachusetts")
+mid_range <- function(x) mean(range(x))
+seats_ma <- do.call(rbind, lapply(split(ma, tx$subregion), function(d) {
+  data.frame(lat = mid_range(d$lat), long = mid_range(d$long), subregion = unique(d$subregion))
+})) 
+```
+
+    ## Warning in split.default(x = seq_len(nrow(x)), f = f, drop = drop, ...): data
+    ## length is not a multiple of split variable
+
+``` r
+ma <- ma %>%
+    rename(longitude = long,
+         latitude = lat
+  )
+
+dn_lq %>%
+    filter(state == "MA") %>%
+  ggplot(aes(x = longitude, y = latitude)) +
+  geom_polygon(aes(group = group), data = ma, fill = NA, colour = "grey60") +
+  coord_quickmap() +
+  geom_point(alpha = 1, size = 1, aes(color = establishment)) +
+  labs(
+    title = "Are Denny's Located Near La Quinta Hotels in Massachussetts?",
+    caption = "Source: bit.ly/3bFr9o0 & bit.ly/2Oi5OIB",
+    x = NULL, 
+    y = NULL,
+    color = ""
+  ) +
+  scale_color_manual(values = c(
+    "Denny's" = "#ffde24",
+    "La Quinta" = "#005033"
+  )) +
+  theme(
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = NA),
+    axis.text = element_blank(),
+    legend.position = "right", 
+    axis.ticks = element_blank()
+  ) 
+```
+
+![](Lab-04-La-Quinta_is_Spanish_for-Next_to_Denny-s_Pt.-1_files/figure-gfm/final-ma-state-1.png)<!-- -->
