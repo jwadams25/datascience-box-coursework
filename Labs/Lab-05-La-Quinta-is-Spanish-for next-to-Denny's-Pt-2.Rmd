@@ -1,0 +1,356 @@
+---
+title: "Lab 05 - La Quinta is Spanish for next to Denny's, Pt. 2"
+author: "John Adams"
+date: "3/14/21"
+output: github_document
+---
+
+### Lab Directions
+https://rstudio-education.github.io/datascience-box/course-materials/lab-instructions/lab-05/lab-05-wrangle-sp-data.html
+
+### Load packages and data
+
+```{r load-packages, message = FALSE}
+library(tidyverse) 
+library(dsbox) 
+library(skimr)
+```
+
+```{r load-data, message = FALSE}
+states <- read_csv(url("https://raw.githubusercontent.com/rstudio-education/datascience-box/master/course-materials/starters/lab/lab-04-viz-sp-data/data/states.csv"))
+```
+
+### Exercise 1
+
+```{r AK-dn-data}
+dn_ak <- dennys %>%
+  filter(state == "AK")
+
+nrow(dn_ak)
+```
+
+
+### Exercise 2
+
+```{r AK-lq-data}
+lq_ak <- laquinta %>%
+  filter(state == "AK")
+
+nrow(lq_ak)
+```
+
+
+
+### Exercise 3
+
+```{r join-ak}
+dn_lq_ak <- full_join(dn_ak, lq_ak, by = "state")
+dn_lq_ak
+```
+
+
+### Exercise 4
+```{r view-ak-join}
+glimpse(dn_lq_ak)
+nrow(dn_lq_ak)
+```
+
+### Exercise 5
+```{r haversine-function}
+haversine <- function(long1, lat1, long2, lat2, round = 3) {
+  # convert to radians
+  long1 = long1 * pi / 180
+  lat1  = lat1  * pi / 180
+  long2 = long2 * pi / 180
+  lat2  = lat2  * pi / 180
+  
+  R = 6371 # Earth mean radius in km
+  
+  a = sin((lat2 - lat1)/2)^2 + cos(lat1) * cos(lat2) * sin((long2 - long1)/2)^2
+  d = R * 2 * asin(sqrt(a))
+  
+  return( round(d,round) ) # distance in km
+}
+
+
+```
+
+### Exercise 6
+
+```{r distance}
+dn_lq_ak <- dn_lq_ak %>%
+  mutate(distance = haversine(longitude.x, latitude.x, longitude.y, latitude.y, round = 3))
+```
+
+
+### Exercise 7
+
+```{r min-dist}
+
+dn_lq_ak_mindist <- dn_lq_ak %>%
+  group_by(address.x) %>%
+  summarise(closest = min(distance)) %>%
+  arrange(-desc(closest))
+```
+
+### Exercise 8
+
+```{r distribution-min-dist}
+dn_lq_ak_mindist %>%
+  ggplot(aes(x = closest)) +
+  geom_histogram() +
+  labs(title = "Shortest Distances Between Denny's and La Quinta Hotels",
+       subtitle = "in Alaska",
+       x = "Distance (km)") +
+  theme_minimal()
+
+dn_lq_ak_mindist %>%
+  skim(closest)
+```
+### Exercise 9
+
+filter each datat frame to just NC and then join. 
+```{r nc-dn-lq}
+
+dn_nc <- dennys %>%
+  filter(state == "NC")
+
+nrow(dn_nc)
+
+lq_nc <- laquinta %>%
+  filter(state == "NC")
+
+nrow(lq_nc)
+
+12*28 #prediction of rows
+
+dn_lq_nc <- full_join(dn_nc, lq_nc, by = "state")
+dn_lq_nc
+```
+```{r add-distance-nc}
+dn_lq_nc <- dn_lq_nc %>%
+   mutate(distance = haversine(longitude.x, latitude.x, longitude.y, latitude.y, round = 3))
+```
+```{r min-dist-nc}
+
+dn_lq_nc_mindist <- dn_lq_nc %>%
+  group_by(address.x) %>%
+  summarise(closest = min(distance)) %>%
+  arrange(-desc(closest))
+```
+
+
+```{r distribution-min-dist-nc}
+nc_hist <- dn_lq_nc_mindist %>%
+  ggplot(aes(x = closest)) +
+  geom_histogram(binwidth = 10) +
+  labs(title = "Shortest Distances Between Denny's and La Quinta Hotels",
+       subtitle = "in North Carolina",
+       x = "Distance (km)") +
+  theme_minimal()
+
+dn_lq_nc_mindist %>%
+  skim(closest)
+```
+
+### Exercise 10
+
+filter each data frame to just TX and then join. 
+```{r tx-dn-lq}
+
+dn_tx <- dennys %>%
+  filter(state == "TX")
+
+nrow(dn_tx)
+
+lq_tx <- laquinta %>%
+  filter(state == "TX")
+
+nrow(lq_tx)
+
+200*237 #prediction of rows
+
+dn_lq_tx <- full_join(dn_tx, lq_tx, by = "state")
+dn_lq_tx
+```
+```{r add-distance-tx}
+dn_lq_tx <- dn_lq_tx %>%
+   mutate(distance = haversine(longitude.x, latitude.x, longitude.y, latitude.y, round = 3))
+```
+
+```{r min-dist-tx}
+
+dn_lq_tx_mindist <- dn_lq_tx %>%
+  group_by(address.x) %>%
+  summarise(closest = min(distance)) %>%
+  arrange(-desc(closest))
+```
+
+```{r distribution-min-dist-tx}
+tx_hist <- dn_lq_tx_mindist %>%
+  ggplot(aes(x = closest)) +
+  geom_histogram(binwidth = 10) +
+  labs(title = "Shortest Distances Between Denny's and La Quinta Hotels",
+       subtitle = "in Texas",
+       x = "Distance (km)") +
+  theme_minimal()
+
+dn_lq_tx_mindist %>%
+  skim(closest)
+```
+
+### Exercise 11a
+
+filter each data frame to just MA and then join. 
+```{r ma-dn-lq}
+
+dn_ma <- dennys %>%
+  filter(state == "MA")
+
+nrow(dn_ma)
+
+lq_ma <- laquinta %>%
+  filter(state == "MA")
+
+nrow(lq_ma)
+
+8*6 #prediction of rows
+
+dn_lq_ma <- full_join(dn_ma, lq_ma, by = "state")
+dn_lq_ma
+```
+```{r add-distance-ma}
+dn_lq_ma <- dn_lq_ma %>%
+   mutate(distance = haversine(longitude.x, latitude.x, longitude.y, latitude.y, round = 3))
+```
+
+```{r min-dist-ma}
+
+dn_lq_ma_mindist <- dn_lq_ma %>%
+  group_by(address.x) %>%
+  summarise(closest = min(distance)) %>%
+  arrange(-desc(closest))
+```
+
+```{r distribution-min-dist-ma}
+ma_hist <- dn_lq_ma_mindist %>%
+  ggplot(aes(x = closest)) +
+  geom_histogram(binwidth = 10) +
+  labs(title = "Shortest Distances Between Denny's and La Quinta Hotels",
+       subtitle = "in Massachusetts",
+       x = "Distance (km)") +
+  theme_minimal()
+
+dn_lq_ma_mindist %>%
+  skim(closest)
+```
+
+### Exercise 11b
+
+filter each data frame to just MA and then join. 
+```{r ca-dn-lq}
+
+dn_ca <- dennys %>%
+  filter(state == "CA")
+
+nrow(dn_ca)
+
+lq_ca <- laquinta %>%
+  filter(state == "CA")
+
+nrow(lq_ca)
+
+403*56 #prediction of rows
+
+dn_lq_ca <- full_join(dn_ca, lq_ca, by = "state")
+dn_lq_ca
+```
+```{r add-distance-ca}
+dn_lq_ca <- dn_lq_ca %>%
+   mutate(distance = haversine(longitude.x, latitude.x, longitude.y, latitude.y, round = 3))
+```
+
+```{r min-dist-ca}
+
+dn_lq_ca_mindist <- dn_lq_ca %>%
+  group_by(address.x) %>%
+  summarise(closest = min(distance)) %>%
+  arrange(-desc(closest))
+```
+
+```{r distribution-min-dist-ca}
+ca_hist <- dn_lq_ma_mindist %>%
+  ggplot(aes(x = closest)) +
+  geom_histogram(binwidth = 10) +
+  labs(title = "Shortest Distances Between Denny's and La Quinta Hotels",
+       subtitle = "in California",
+       x = "Distance (km)") +
+  theme_minimal()
+
+dn_lq_ma_mindist %>%
+  skim(closest)
+```
+
+```{r}
+dn_lq_ma_mindist <- dn_lq_ma_mindist %>%
+  mutate(state = "MA")
+nrow(dn_lq_ma_mindist) 
+
+dn_lq_nc_mindist <- dn_lq_nc_mindist %>%
+  mutate(state = "NC")
+nrow(dn_lq_nc_mindist)
+
+dn_lq_tx_mindist <- dn_lq_tx_mindist %>%
+  mutate(state = "TX")
+
+dn_lq_ca_mindist <- dn_lq_ca_mindist %>%
+mutate(state = "CA")
+
+
+dn_lq_ma_nc_mindist <- full_join(dn_lq_ma_mindist, dn_lq_nc_mindist)
+
+dn_lq_ma_nc_tx_mindist <- full_join(dn_lq_ma_nc_mindist,dn_lq_tx_mindist)
+
+dn_lq_ma_nc_tx_ca_mindist <- full_join(dn_lq_ma_nc_tx_mindist, dn_lq_ca_mindist)
+
+dn_lq_ma_nc_tx_ca_mindist_group <- dn_lq_ma_nc_tx_ca_mindist %>%
+  group_by(state) %>%
+  summarise(med = median(closest))
+
+dn_lq_ma_nc_tx_ca_mindist %>%
+  ggplot(aes(x = closest, color = state, fill = state)) +
+  geom_density(alpha = 0.5) +
+  geom_vline(data = dn_lq_ma_nc_tx_ca_mindist_group, aes(xintercept = med, color = state)) +
+  labs(
+    title = "Are Denny's and La Quinta Hotels close to one another?",
+    subtitle = "in California, Massachusetts, North Carolina, and Texas",
+    x = "Closest distance between a Denny's and a La Quinta Hotel (km)",
+    y = "",
+    caption = "Source: bit.ly/3bFr9o0 & bit.ly/2Oi5OIB"
+  ) +
+  scale_color_manual(values = c(
+    "MA" = "#c60c30",
+    "TX" = "#BF5700",
+    "NC" = "#4B9CD3",
+    "CA" = "#552583"
+  )) +
+  scale_fill_manual(values = c(
+    "MA" = "#c60c30",
+    "TX" = "#BF5700",
+    "NC" = "#4B9CD3",
+    "CA" = "#552583"
+  )) +
+  theme_minimal() +
+  facet_wrap(~state, nrow = 4, ncol = 1)
+  
+```
+
+```{r summary-stats-tx-nc-ma}
+
+dn_lq_ma_nc_tx_ca_mindist %>%
+  group_by(state) %>%
+  skim(closest)
+
+```
+
+Mitch Hedberg's joke, "La Quinta is Spanish for "next to Denny's", most likely holds true in Texas compared to North Carolina and Massachusetts. 75 percent of La Quinta hotels are within 6.63 km of one another and on average are about 3.37km apart. 
