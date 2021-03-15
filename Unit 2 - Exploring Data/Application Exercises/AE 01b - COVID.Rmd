@@ -29,7 +29,7 @@ For our analysis, in addition to the coronavirus package, we will use the follow
 We will make use of the **DT** package for interactive display of tabular output in the Appendix.
 
 ```{r load-packages, warning=FALSE, message=FALSE}
-library(coronavirus) # devtools::install_github("RamiKrispin/coronavirus")
+library(coronavirus) 
 library(tidyverse)
 library(lubridate)
 library(glue)
