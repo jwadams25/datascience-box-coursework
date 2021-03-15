@@ -1,0 +1,83 @@
+---
+title: "Lab 08 - University of Edinburgh Art Collection"
+author: "John Adams"
+date: "3/15/21"
+output: github_document
+---
+
+### Load packages and data
+
+```{r load-packages, message = FALSE}
+library(tidyverse) 
+library(skimr)
+library(rvest)
+```
+
+```{r load-data}
+# Remove eval = FALSE or set it to TRUE once data is ready to be loaded
+uoe_art <- read_csv("uoe-art.csv")
+```
+
+### Exercise 9
+
+```{r separate-title-date, error = TRUE}
+uoe_art <- uoe_art %>%
+  separate(title, into = c("title", "date"), sep = "\\(") %>%
+  mutate(year = str_remove(date, "\\)") %>% as.numeric()) %>%
+  select(title, artist, year, date)
+```
+
+### Exercise 10
+
+```{r summary}
+
+uoe_art %>%
+  skim()
+```
+
+
+### Exercises 11 & 12
+
+```{r yeaer-hist}
+
+uoe_art %>%
+  ggplot(aes(x = year)) +
+  geom_histogram()
+```
+The print titled Death Mask (2) is the one throwing things off because when scrapped it captured th (2) as the year because it is in the same format. 
+
+```{r fix-data}
+
+uoe_art <- uoe_art %>%
+  mutate(
+    year = case_when(
+      year == 2 ~ 1964, 
+      TRUE ~ year
+    )
+  )
+
+```
+
+```{r year-hist-updated}
+uoe_art %>%
+  ggplot(aes(x = year)) +
+  geom_histogram()
+```
+
+### Exercise 13
+
+```{r}
+uoe_art %>%
+  count(artist) %>%
+  arrange(desc(n))
+```
+Emma Gillies is a potter who grew up outside of Edinburgh and at one point in her life studied pottery at Edinburgh College of Art. 
+
+### Exercise 14
+
+```{r child-titles}
+child_titles <- uoe_art %>%
+                filter(title %in% str_subset(title, "Child"))
+child_titles
+```
+
