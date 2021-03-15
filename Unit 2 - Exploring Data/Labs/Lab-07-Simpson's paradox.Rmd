@@ -1,0 +1,107 @@
+---
+title: "Lab 07 - Simpson's paradox"
+author: "John Adams"
+date: "3/15/21"
+output: github_document
+---
+
+### Directions for Lab
+https://rstudio-education.github.io/datascience-box/course-materials/lab-instructions/lab-07/lab-07-simpsons-paradox.html
+
+### Load packages and data
+
+```{r load-packages, message = FALSE}
+library(tidyverse) 
+library(mosaicData) 
+```
+
+### Exercise 1
+
+
+```{r the-data}
+?Whickham
+```
+
+Observational study. 
+
+### Exercise 2
+
+```{r understand-data}
+head(Whickham)
+nrow(Whickham)
+glimpse(Whickham)
+```
+
+1,314 people were included in this survey. 
+
+### Exercise 3
+
+The researchers recorded 3 variables: age at time of first survey, whether or not they were a smoker, and if the person was alive or dead 20 years after the first survey.
+
+### Exercise 4
+
+I'd expect poor health outcomes for those that smoke. 
+
+### Exercise 5
+
+```{r table}
+Whickham %>%
+ggplot(aes(x = smoker, fill = outcome)) +
+  geom_bar(position = "fill") +
+  scale_fill_manual(values = c(
+    "Alive" = "#2166ac",
+    "Dead"  = "#b2182b"
+  )) + 
+  labs(title = "Relationship between smoking status and health outcomes",
+       subtitle = "1,314 Women first surveyed between 1972-1974 and followed-up with 20 years later",
+       x = "Whether or not the woman smoked", y = "Proportion", 
+       fill = "Health outcome after 20 years") +
+  theme_minimal()
+
+Whickham %>%
+  count(smoker, outcome) %>% 
+  group_by(smoker) %>%
+  mutate(proportion = n / sum(n)) %>% 
+  select(-n) %>%
+  pivot_wider(names_from = smoker, values_from = proportion)
+```
+This visualization shows that those who did not smoke at the time of the survey had a higher rate of death after 20 years. 
+```{r age-cats}
+Whickham_cat <- Whickham %>%
+  mutate(
+    age_cat = case_when(
+      age <= 44 ~ "18-44",
+      age > 44 & age <= 64 ~ "45-64",
+      age > 64 ~ "65+"
+    )
+  )
+```
+```{r age-cats-viz}
+
+Whickham_cat %>%
+  ggplot(aes(x = smoker, fill = outcome)) +
+  geom_bar(position = "fill") +
+  facet_wrap(~age_cat, nrow = 1, ncol = 3) +
+  theme_minimal() +
+  scale_fill_manual(values = c(
+    "Alive" = "#2166ac",
+    "Dead"  = "#b2182b"
+  )) + 
+  labs(title = "Relationship between smoking status and health outcomes by age group",
+       subtitle = "1,314 women first surveyed between 1972-1974 and followed-up with 20 years later",
+       x = "Whether or not the woman smoked", y = "", 
+       fill = "Health outcome after 20 years")
+
+```
+```{r}
+Whickham_cat %>%
+  count(smoker, age_cat, outcome) %>% 
+  group_by(smoker, age_cat) %>%
+  mutate(proportion = n / sum(n)) %>% 
+  select(-n) %>%
+  pivot_wider(names_from = age_cat, values_from = proportion)
+```
+
+In contrast to our first visualization, these bar charts show that within each age group, the rate of death is higher for those that smoked. The oldest age group, 65+, has such high rates of death after 20 years, that they are causing the overal to paint an incorrect picture, hense the simpsons paradox. 
+
+
