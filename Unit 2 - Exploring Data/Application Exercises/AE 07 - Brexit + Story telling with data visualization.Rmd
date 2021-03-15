@@ -96,7 +96,7 @@ brexit %>%
 
 ### Exercise 3 - Comparing proportions across bars
 
-Recreate the same visualisation from the previous exercise, this time dodging the bars for opinion proportions for each region, rather than faceting by region and then improve the legend.
+Recreate the same visualization from the previous exercise, this time dodging the bars for opinion proportions for each region, rather than faceting by region and then improve the legend.
 How is the story this visualisation telling different than the story the previous plot tells?
 
 ```{r}
