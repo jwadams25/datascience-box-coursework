@@ -34,11 +34,17 @@ evals %>%
 evals %>%
   select(score) %>%
   skim()
+
+evals %>%
+  select(bty_avg) %>%
+  skim()
 ```
 
 
 
 ### Exercises 2 and 3
+
+Geom_Jitter prevents overplotting by moving dots that overlap a random amount left and right. Given that score is descrete and there are 463 observations, some of those observations overlap, which means when looking at the visualization, you are not seeing all of the data. I plotted a geom_point with an alpha of 0.25 to also uncover the overlapping. 
 
 ```{r score vs bty avg}
 score_point <- evals %>%
@@ -57,5 +63,51 @@ grid.arrange(score_point, score_point_alpha, score_jitter, nrow = 2, ncol = 2)
 
 ```
 
+### Exercise 4 
+Let’s see if the apparent trend in the plot is something more than natural variation. Fit a linear model called score_bty_fit to predict average professor evaluation score by average beauty rating (bty_avg). Based on the regression output, write the linear model.
 
-Add exercise headings as needed.
+score = 3.88 + 0.06664 x bty_avg
+
+```{r linear model}
+
+score_bty_fit <- linear_reg() %>%
+  set_engine("lm") %>%
+  fit(score ~ bty_avg, data = evals) %>%
+  tidy()
+
+score_bty_fit
+
+```
+### Exercise 5
+Recreate the scatterplot from Exercise 2, and add the regression line to this plot in orange colour, with shading for the uncertainty of the line turned off.
+
+```{r plot with line}
+score_jitter <- evals %>%
+                  ggplot(aes(y = score, x = bty_avg)) +
+                  geom_jitter() +
+                  geom_smooth(method = lm, se = FALSE)
+score_jitter
+
+```
+
+### Exercises 6-7
+
+Based on this model, we can expect that a professors average evaluation score will rise on average by 0.066 points for each additional point increase in their average beauty rating. 
+
+The y-intercept would mean that a teacheer will earn an average evaluation score of 3.88 if they have a 0 beauty rating. The lowest beauty score in this dataset is a 1.67 and, in general, it's hard to imagine a professor getting a beauty rating of 0, which makes the y-intercept meaningless in this case. 
+
+### Exercise 8 
+
+3.5% of the variation in a professors average evaluation score can be explained by their average beauty rating. 
+
+```{r correlation}
+
+evals %>%
+  summarise(
+    r = cor(score, bty_avg), 
+    r_squared = (cor(score, bty_avg))^2
+  )
+
+```
+
+
