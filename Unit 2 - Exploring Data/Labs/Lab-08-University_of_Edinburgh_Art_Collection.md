@@ -16,13 +16,13 @@ library(rvest)
 uoe_art <- read_csv("uoe-art.csv")
 ```
 
-    ## 
+    ## Rows: 2980 Columns: 3
     ## ── Column specification ────────────────────────────────────────────────────────
-    ## cols(
-    ##   title = col_character(),
-    ##   artist = col_character(),
-    ##   link = col_character()
-    ## )
+    ## Delimiter: ","
+    ## chr (3): title, artist, link
+    ## 
+    ## ℹ Use `spec()` to retrieve the full column specification for this data.
+    ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 
 ### Exercise 9
 
@@ -65,17 +65,17 @@ Data summary
 
 **Variable type: character**
 
-| skim\_variable | n\_missing | complete\_rate | min | max | empty | n\_unique | whitespace |
-|:---------------|-----------:|---------------:|----:|----:|------:|----------:|-----------:|
-| title          |          1 |           1.00 |   0 |  95 |     8 |      1367 |          0 |
-| artist         |        115 |           0.96 |   2 |  55 |     0 |      1111 |          0 |
-| date           |        636 |           0.79 |   3 |  49 |     0 |       378 |          0 |
+| skim_variable | n_missing | complete_rate | min | max | empty | n_unique | whitespace |
+|:--------------|----------:|--------------:|----:|----:|------:|---------:|-----------:|
+| title         |         1 |          1.00 |   0 |  95 |     8 |     1367 |          0 |
+| artist        |       115 |          0.96 |   2 |  55 |     0 |     1111 |          0 |
+| date          |       636 |          0.79 |   3 |  49 |     0 |      378 |          0 |
 
 **Variable type: numeric**
 
-| skim\_variable | n\_missing | complete\_rate |    mean |    sd |  p0 |  p25 |  p50 |  p75 | p100 | hist  |
-|:---------------|-----------:|---------------:|--------:|------:|----:|-----:|-----:|-----:|-----:|:------|
-| year           |       1402 |           0.53 | 1964.37 | 55.57 |   2 | 1953 | 1962 | 1979 | 2020 | ▁▁▁▁▇ |
+| skim_variable | n_missing | complete_rate |    mean |    sd |  p0 |  p25 |  p50 |  p75 | p100 | hist  |
+|:--------------|----------:|--------------:|--------:|------:|----:|-----:|-----:|-----:|-----:|:------|
+| year          |      1402 |          0.53 | 1964.37 | 55.57 |   2 | 1953 | 1962 | 1979 | 2020 | ▁▁▁▁▇ |
 
 ### Exercises 11 & 12
 
@@ -124,7 +124,7 @@ uoe_art %>%
   arrange(desc(n))
 ```
 
-    ## # A tibble: 1,112 x 2
+    ## # A tibble: 1,112 × 2
     ##    artist               n
     ##    <chr>            <int>
     ##  1 Unknown            357
@@ -150,17 +150,17 @@ child_titles <- uoe_art %>%
 child_titles
 ```
 
-    ## # A tibble: 11 x 4
-    ##    title                                 artist            year date            
-    ##    <chr>                                 <chr>            <dbl> <chr>           
-    ##  1 "The Sun Dissolves while Man Looks A… Eduardo Luigi P…    NA <NA>            
-    ##  2 "Woman with Child and Still Life "    Catherine I. Mc…  1938 1938)           
-    ##  3 "Child's collar. Chinese"             Unknown             NA <NA>            
-    ##  4 "Figure Composition with Nurse and C… Edward A. Gage      NA Circa 1950)     
-    ##  5 "Virgin and Child"                    Unknown             NA <NA>            
-    ##  6 "Virgin and Child "                   Unknown             NA Tondo)          
-    ##  7 "Untitled - Portrait of a Woman and … William Gillon      NA Feb 1962)       
-    ##  8 "Virgin and Child "                   Unknown             NA statuette head …
-    ##  9 "Untitled - Children Playing "        Monika L I Ueck…  1963 1963)           
-    ## 10 "Child's chinese headdress"           Unknown             NA <NA>            
-    ## 11 "The Children's Hour "                Eduardo Luigi P…    NA 1974-1976)
+    ## # A tibble: 11 × 4
+    ##    title                                                      artist  year date 
+    ##    <chr>                                                      <chr>  <dbl> <chr>
+    ##  1 "The Sun Dissolves while Man Looks Away from the Unborn C… Eduar…    NA <NA> 
+    ##  2 "Woman with Child and Still Life "                         Cathe…  1938 1938)
+    ##  3 "Child's collar. Chinese"                                  Unkno…    NA <NA> 
+    ##  4 "Figure Composition with Nurse and Child, and Woman with … Edwar…    NA Circ…
+    ##  5 "Virgin and Child"                                         Unkno…    NA <NA> 
+    ##  6 "Virgin and Child "                                        Unkno…    NA Tond…
+    ##  7 "Untitled - Portrait of a Woman and Child "                Willi…    NA Feb …
+    ##  8 "Virgin and Child "                                        Unkno…    NA stat…
+    ##  9 "Untitled - Children Playing "                             Monik…  1963 1963)
+    ## 10 "Child's chinese headdress"                                Unkno…    NA <NA> 
+    ## 11 "The Children's Hour "                                     Eduar…    NA 1974…
