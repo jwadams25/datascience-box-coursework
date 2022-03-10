@@ -1,0 +1,42 @@
+---
+title: "Lab 11 - Grading the professor, Pt. 2"
+author: "John Adams"
+date: "3/10/22"
+output: github_document
+---
+
+### Load packages and data
+
+```{r load-packages, message=FALSE}
+library(tidyverse) 
+library(tidymodels)
+library(openintro)
+```
+
+### Exercise 1
+
+```{r data }
+glimpse(evals)
+```
+
+### Exercise 2
+
+Fit a linear model (one you have fit before): score_bty_fit, predicting average professor evaluation score based on average beauty rating (bty_avg) only. Write the linear model, and note the R2 and the adjusted R2.
+
+
+score = 3.88 + 0.06664 x bty_avg
+
+Multiple R-squared:  0.03502,	Adjusted R-squared:  0.03293 
+
+
+```{r score bty}
+score_bty_fit <- linear_reg() %>%
+  set_engine("lm") %>%
+  fit(score ~ bty_avg, data = evals) %>%
+  tidy()
+
+score_bty_fit
+
+summary(lm(formula = evals$score ~ evals$bty_avg))
+```
+
