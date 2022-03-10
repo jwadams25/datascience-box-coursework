@@ -11,17 +11,51 @@ output: github_document
 library(tidyverse) 
 library(tidymodels)
 library(openintro)
+library(skimr)
+library(gridExtra)
+```
+
+### Data
+```{r data}
+glimpse(evals)
 ```
 
 ### Exercise 1
+Visualize the distribution of score. 
+a. Is the distribution skewed? What does that tell you about how students rate courses? Is this what you expected to see? Why, or why not? Include any summary statistics and visualizations you use in your response.
 
-Remove this text, and add your answer for Exercise 1 here.
-Add code chunks as needed.
-Don't forget to label your code chunk.
-Do not use spaces in code chunk labels.
+The distribution of scores is skewed to the left, which tells you that students tend to rate courses really high (median = 4.3) and occasion rate courses lower. 75% of courses are rated higher than a 3.8. This matches my expectation because most classes I've had tend to be good and then there is always one or two that were not so good. 
 
-### Exercise 2
+```{r exercise 1}
+evals %>%
+  ggplot(aes(x = score)) +
+  geom_histogram(binwidth = 0.1, color = "#FFFFFF", fill = "navy")
 
-...
+evals %>%
+  select(score) %>%
+  skim()
+```
+
+
+
+### Exercises 2 and 3
+
+```{r score vs bty avg}
+score_point <- evals %>%
+                ggplot(aes(y = score, x = bty_avg)) +
+                geom_point()
+
+score_point_alpha <- evals %>%
+                      ggplot(aes(y = score, x = bty_avg)) +
+                      geom_point(alpha = 0.25)
+
+score_jitter <- evals %>%
+                  ggplot(aes(y = score, x = bty_avg)) +
+                  geom_jitter()
+
+grid.arrange(score_point, score_point_alpha, score_jitter, nrow = 2, ncol = 2)
+
+```
+
 
 Add exercise headings as needed.
